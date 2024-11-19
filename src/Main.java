@@ -1,5 +1,10 @@
+import java.nio.channels.ScatteringByteChannel;
+import java.util.Scanner;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Случайные числа от 0 дло 10: " + Math.random());
+        System.out.println("Введите текст и нажмите <Enter>: ");
+        String text = new Scanner(System.in).nextLine();
+        System.out.println("Длина текста: " + text.length());
     }
 }
