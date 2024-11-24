@@ -10,6 +10,5 @@ public class Main {
         System.out.println("Разность чисел: " + (number1-number2));
         System.out.println("Произведение чисел: " + (number1*number2));
         System.out.println("Частное чисел: " + ((double)number1/number2));
-
     }
 }
