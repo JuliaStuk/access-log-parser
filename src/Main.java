@@ -1,20 +1,18 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
         int lineCount = 0;
-        int ya = 0;
-        int gl = 0;
         String line;
-        String[] parts;
         String path = new Scanner(System.in).nextLine();
         File file = new File(path);
         boolean fileExist = file.exists();
         boolean isDirectory = file.isDirectory();
+        Statistics statistic = new Statistics();
 
         if (!fileExist || isDirectory) {
             System.out.println("Путь к папке или несуществующему файлу");
@@ -24,46 +22,28 @@ public class Main {
             BufferedReader reader =
                     new BufferedReader(fileReader);
 
-            String firstBrackets = new String();
-            String fragment;
             while ((line = reader.readLine()) != null) {
                 lineCount++;
-                int length = line.length();
-                if (length > 1024) {
-                    throw new LineException("Строка превышает 1024 символа.");
-                }
-               int finishIndex = new StringBuilder(line).reverse().toString().indexOf(")");
-                if (finishIndex>=0) {
-                    int startIndex = new StringBuilder(line).reverse().toString().indexOf("(",finishIndex);
-                    if (startIndex >= 0) {
-                        firstBrackets = line.substring(line.length() - startIndex, line.length() - finishIndex - 1);
-                    }
-                }
-               parts = firstBrackets.split(";");
-                if (parts.length >= 2) {
-                    fragment = parts[1].trim();
-                    parts = fragment.split("/");
-                //    System.out.println(parts[0]);
-                }
-                if (parts[0].equals("YandexBot")){
-                    ya++;
-                }
-                if (parts[0].equals("Googlebot")){
-                    gl++;
-                }
+
+                LogEntry logEntry = new LogEntry(line);
+                statistic.addEntry(logEntry);
+
+                System.out.println("IP Address: " + logEntry.getIpAddress());
+                System.out.println("Date and Time: " + logEntry.getDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                System.out.println("HTTP Method: " + logEntry.getMethod());
+                System.out.println("Path: " + logEntry.getPath());
+                System.out.println("Response Code: " + logEntry.getResponseCode());
+                System.out.println("Response Size: " + logEntry.getResponseSize());
+                System.out.println("Referer: " + logEntry.getReferer());
+                System.out.println("Operating System: " + logEntry.getUserAgent().getOperatingSystem());
+                System.out.println("Browser: " + logEntry.getUserAgent().getBrowser());
+                System.out.println("Total Traffic: " + statistic.getTotalTraffic());
             }
         } catch (LineException lx) {
             lx.printStackTrace();
         } catch (Exception ex) {
-  //          System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!");
             ex.printStackTrace();
         }
-
-        System.out.println("Общее количество YandexBot: " + ya);
-        System.out.println("Общее количество Googlebot: " + gl);
-        System.out.println("Доля запросов YandexBot: " + (double)ya/lineCount);
-        System.out.println("Доля запросов Googlebot: " + (double)gl/lineCount);
-        System.out.println("Общее количество строк в файле: " + lineCount);
     }
 }
 
